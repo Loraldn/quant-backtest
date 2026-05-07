@@ -70,10 +70,21 @@ st.markdown("""
 @st.cache_data(ttl=3600)
 def fetch_stock_data(ticker, start, end):
     """Fetch OHLCV data from Yahoo Finance with caching."""
-    df = yf.download(ticker, start=start, end=end, progress=False)
-    if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)
-    return df
+    try:
+        df = yf.download(ticker, start=start, end=end, progress=False, auto_adjust=False)
+        # Handle MultiIndex columns (yfinance >= 0.2.31 always returns MultiIndex)
+        if isinstance(df.columns, pd.MultiIndex):
+            df = df.xs(ticker, level=1, axis=1)
+        # Ensure we have the required columns
+        required = ["Open", "High", "Low", "Close", "Volume"]
+        for col in required:
+            if col not in df.columns:
+                return pd.DataFrame()
+        df = df[required].dropna()
+        return df
+    except Exception as e:
+        st.warning(f"Error fetching data: {e}")
+        return pd.DataFrame()
 
 
 def compute_ma_crossover(df, short_window=20, long_window=50):
@@ -581,7 +592,7 @@ st.markdown("---")
 st.markdown(
     "<div style='text-align:center; color:#666; font-size:0.85rem;'>"
     "Built by Dongni Lin (Lora) · McGill University · B.A. Statistics & Economics · "
-    "<a href='https://github.com/YOUR_USERNAME' style='color:#1a73e8;'>GitHub</a>"
+    "<a href='https://github.com/Loraldn' style='color:#1a73e8;'>GitHub</a>"
     "</div>",
     unsafe_allow_html=True,
 )
