@@ -894,7 +894,7 @@ if len(results) > 1:
             textfont=dict(size=11, color="#888"))])
         fig.update_layout(**CHART, height=300, bargap=0.4,
             yaxis_title=None)
-        fig.update_xaxes(tickfont=dict(size=9))
+        fig.update_xaxes(gridcolor="#111", tickfont=dict(size=9))
         fig.add_annotation(text=title, xref="paper", yref="paper",
             x=0, y=1.12, showarrow=False,
             font=dict(size=10, color="#555", family="Inter"), align="left")
@@ -989,7 +989,7 @@ if enable_risk and results:
             zmid=0, text=np.where(np.isnan(pivot.values), "",
                                   np.char.add(np.char.mod("%.1f", np.nan_to_num(pivot.values)), "%")),
             texttemplate="%{text}", textfont=dict(size=10),
-            colorbar=dict(title="Return %", tickfont=dict(color="#555")),
+            colorbar=dict(title="Return %", tickfont=dict(color="#555"), titlefont=dict(color="#555")),
         ))
         fig_hm.update_layout(**CHART, height=max(200, len(pivot) * 40 + 60),
             margin=dict(l=40, r=10, t=30, b=10))
